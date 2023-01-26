@@ -37,7 +37,7 @@ public class TodoController {
         return ResponseEntity.ok(todos);
     }
 
-    @PatchMapping(value = "/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{todoId}/description", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoResource> updateTodoDescription(
             @PathVariable("todoId") String todoId,
             @RequestBody UpdateTodoDescriptionRequest updateTodoDescriptionRequest
@@ -51,7 +51,7 @@ public class TodoController {
         return ResponseEntity.ok(toTodoResource(todo));
     }
 
-    @PatchMapping(value = "/{todoId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{todoId}/status", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoResource> updateTodoStatus(
             @PathVariable("todoId") String todoId,
             @RequestBody UpdateTodoStatusRequest updateTodoStatusRequest
