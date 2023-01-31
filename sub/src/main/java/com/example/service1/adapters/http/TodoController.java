@@ -15,7 +15,7 @@ public class TodoController {
     @Autowired
     TodoApplicationService todoApplicationService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TodoResource> createTodo(@RequestBody CreateTodoRequest createTodoRequest) {
         final var todo = todoApplicationService.createTodo(new CreateTodoCommand(
                 createTodoRequest.description()
@@ -66,7 +66,7 @@ public class TodoController {
     }
 
     @DeleteMapping(value = "/{todoId}")
-    public ResponseEntity<?> deleteTodo(@PathVariable("todoId") String todoId) {
+    public ResponseEntity<Void> deleteTodo(@PathVariable("todoId") String todoId) {
         todoApplicationService.deleteTodo(todoId);
         return ResponseEntity.ok().build();
     }
