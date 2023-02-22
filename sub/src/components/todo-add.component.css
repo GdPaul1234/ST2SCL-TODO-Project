@@ -1,0 +1,14 @@
+label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+textarea {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 1.125em;
+}
+
+form {
+    margin-left: 1.5em;
+}

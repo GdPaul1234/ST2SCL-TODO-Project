@@ -1,7 +1,9 @@
 .todo * + * {
-    margin-left: 0.5em;
+    margin: 0.25rem;
 }
 
 .description {
-    width: 20em;
+    display: inline-block;
+    font-size: 1em;
+    width: 80ch;
 }
