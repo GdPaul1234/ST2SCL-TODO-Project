@@ -4,6 +4,7 @@ import com.example.service1.domain.Todo;
 import com.example.service1.domain.TodoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class TodoApplicationService {
     }
 
     public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+        return todoRepository.findAll(Sort.by("done"));
     }
 
     @Transactional

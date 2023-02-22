@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(maxAge = 3600)
 @RequestMapping("/v1/todos")
 public class TodoController {
     TodoApplicationService todoApplicationService;
