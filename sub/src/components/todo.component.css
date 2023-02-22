@@ -1,0 +1,7 @@
+.todo * + * {
+    margin-left: 0.5em;
+}
+
+.description {
+    width: 20em;
+}
