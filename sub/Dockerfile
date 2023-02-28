@@ -8,6 +8,8 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+ENV REACT_APP_API_URL=http://back-end-service.default.svc.cluster.local:80
+
 RUN npm ci
 
 # Bundle app source
@@ -19,4 +21,4 @@ RUN npm run build
 
 FROM httpd:alpine
 WORKDIR /var/www/html
-COPY --from=build /usr/src/app .
+COPY --from=build /usr/src/app/build .
