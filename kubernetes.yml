@@ -10,7 +10,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: front-endF
+      app: front-end
   template:
     metadata:
       labels:
@@ -18,10 +18,13 @@ spec:
     spec:
       containers:
         - name: front-end-container
-          image: efrei/front-end:1
+          image: fripiane/st2scl-frontend:latest
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 400Mi
+              cpu: 500m
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,10 +41,13 @@ spec:
     spec:
       containers:
         - name: back-end-container
-          image: efrei/back-end:1
+          image: fripiane/st2scl-backend:latest
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 400Mi
+              cpu: 500m
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,20 +69,30 @@ spec:
           ports:
             - containerPort: 5432
           env:
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: postgres-secret
-                key: password
+            - name: POSTGRES_DB
+              value: todolist_db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
+          resources:
+            limits:
+              memory: 400Mi
+              cpu: 500m
       volumes:
         - name: postgresdb
           persistentVolumeClaim:
             claimName: postgres-pv-claim
 ---
-
 ###############################################################################
 ######                              SERVICES                             ######
 ###############################################################################
@@ -88,13 +104,12 @@ metadata:
 spec:
   ports:
     - name: http
-      targetPort: 8080
+      targetPort: 80
       port: 80
   type: NodePort
   selector:
     app: front-end
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -102,13 +117,12 @@ metadata:
 spec:
   ports:
     - name: http
-      targetPort: 80
+      targetPort: 8080
       port: 80
-  type: ClusterIP
+  type: NodePort
   selector:
     app: back-end
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -118,11 +132,10 @@ metadata:
 spec:
   type: NodePort
   ports:
-   - port: 5432
+    - port: 5432
   selector:
-   app: postgres
+    app: postgres
 ---
-
 ###############################################################################
 ######                               VOLUMES                             ######
 ###############################################################################
@@ -130,10 +143,10 @@ spec:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-    name: postgres-pv-volume
-    labels:
-      type: local
-      app: postgres
+  name: postgres-pv-volume
+  labels:
+    type: local
+    app: postgres
 spec:
   storageClassName: manual
   capacity:
@@ -143,7 +156,6 @@ spec:
   hostPath:
     path: "data"
 ---
-
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -158,7 +170,6 @@ spec:
     requests:
       storage: 5Gi
 ---
-
 ###############################################################################
 ######                               SECRETS                             ######
 ###############################################################################
@@ -169,25 +180,33 @@ metadata:
   name: postgres-secret
 type: kubernetes.io/basic-auth
 stringData:
+  user: postgres
   password: root
 ---
-
 ###############################################################################
 ######                               INGRESS                             ######
 ###############################################################################
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: front-end-ingress
-  annotations:
-    kubernetes.io/ingress.class: traefik
 spec:
   rules:
     - host: front-end.localhost
       http:
         paths:
           - path: /
+            pathType: Exact
             backend:
-              serviceName: front-end-service
-              servicePort: http
+              service:
+                name: front-end-service
+                port:
+                  number: 80
+          - path: /v1/todos
+            pathType: Prefix
+            backend:
+              service: back-end-service
+              port:
+                number: 80
+
