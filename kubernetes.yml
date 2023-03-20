@@ -64,8 +64,8 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15.2-alpine
-          imagePullPolicy: "IfNotPresent"
+          image: fripiane/st2scl-database:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5432
           env:
@@ -106,7 +106,7 @@ spec:
     - name: http
       targetPort: 80
       port: 80
-  type: NodePort
+  type: ClusterIP
   selector:
     app: front-end
 ---
@@ -119,7 +119,7 @@ spec:
     - name: http
       targetPort: 8080
       port: 80
-  type: NodePort
+  type: ClusterIP
   selector:
     app: back-end
 ---
@@ -197,7 +197,7 @@ spec:
       http:
         paths:
           - path: /
-            pathType: Exact
+            pathType: Prefix
             backend:
               service:
                 name: front-end-service
@@ -206,7 +206,8 @@ spec:
           - path: /v1/todos
             pathType: Prefix
             backend:
-              service: back-end-service
-              port:
-                number: 80
+              service:
+                name: back-end-service
+                port:
+                  number: 80
 
