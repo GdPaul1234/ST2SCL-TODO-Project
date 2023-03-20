@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-ENV REACT_APP_API_URL=http://back-end-service.default.svc.cluster.local:80
+ENV REACT_APP_API_URL=
 
 RUN npm ci
 
